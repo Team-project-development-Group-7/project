@@ -14,6 +14,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import team.group7.scm.bean.Tag;
+import team.group7.scm.service.IOService;
+import team.group7.scm.service.SetTagService;
+import team.group7.scm.service.Impl.IOServiceImpl;
+import team.group7.scm.service.Impl.SetTagServiceImpl;
+
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.ActionListener;
@@ -24,11 +31,13 @@ import java.awt.event.ActionEvent;
  * */
 public class TagManageView extends JFrame {
 
+	private SetTagService setTagService = new SetTagServiceImpl();
+	private IOService ioService = new IOServiceImpl();
 	private static final long serialVersionUID = -7649144699181062671L;
 	private JPanel contentPane;
 	public static JTable table;
 	public static int selectedRow = 0;	//选中行
-
+	
 	/**
 	 * Create the frame.
 	 */
@@ -77,7 +86,25 @@ public class TagManageView extends JFrame {
 		
 		JMenu mnNewMenuExport = new JMenu("\u5BFC\u51FA");
 		mnNewMenuIo.add(mnNewMenuExport);
-		
+		mnNewMenuInput.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					ioService.input();
+					dispose();
+					new TagManageView().setVisible(true);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		mnNewMenuExport.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				ioService.output();
+			}
+		});
 		JMenu mnNewMenuTagManage = new JMenu("\u6807\u7B7E\u7BA1\u7406");
 		menuBar.add(mnNewMenuTagManage);
 		
@@ -134,9 +161,8 @@ public class TagManageView extends JFrame {
 				int op = JOptionPane.showConfirmDialog(getThis(),"你确定要删除吗?","删除",JOptionPane.YES_NO_OPTION);
 				if(op == JOptionPane.YES_OPTION) {
 					((DefaultTableModel) table.getModel()).removeRow(selectedRow);
-				}else {
-					
-				}
+					setTagService.delTag(selectedRow);
+				}else { }
 			}
 		});
 		btnDel.setFont(new Font("黑体", Font.PLAIN, 20));
@@ -144,19 +170,16 @@ public class TagManageView extends JFrame {
 		contentPane.add(btnDel);
 	}
 	/**
-	 * 标签类-待修改-需数据库读写
+	 * 标签类
 	 * */
 	private JTable createJTable() {
 		JTable table = new JTable() {
 			private static final long serialVersionUID = 7012894062931265989L;
 			public boolean isCellEditable(int row, int column) {return false;};
 		};
-		Object[] columnNames = {"标签类","属性1","属性2","属性3"};
-		Object[][] data = {
-				{"相关度","是","否"},
-				{"态度","积极","中立","消极"},
-				{"推广","是","否"}
-		};
+		
+		Object[] columnNames = setTagService.getTagJTableColNames();
+		Object[][] data = setTagService.getTagJTableData();
 		
 		table.setModel(new DefaultTableModel(data,columnNames));
 		//修改列宽

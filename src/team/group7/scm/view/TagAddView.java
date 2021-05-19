@@ -4,6 +4,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import team.group7.scm.bean.Tag;
+import team.group7.scm.service.SetTagService;
+import team.group7.scm.service.Impl.SetTagServiceImpl;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
@@ -16,6 +21,8 @@ import java.awt.event.ActionEvent;
  * */
 public class TagAddView extends JFrame {
 
+	private SetTagService setTagService = new SetTagServiceImpl();
+	
 	private static final long serialVersionUID = 8609093595688151747L;
 	private JPanel contentPane;
 	private JTextField textTag;
@@ -82,6 +89,7 @@ public class TagAddView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel tableModel = (DefaultTableModel) TagManageView.table.getModel();
 				tableModel.addRow(new Object[] {textTag.getText(),textAtt1.getText(),textAtt2.getText(),textAtt3.getText()});
+				setTagService.addTag(new Tag(tableModel.getRowCount(),textTag.getText(),textAtt1.getText(),textAtt2.getText(),textAtt3.getText()));
 				dispose();
 			}
 		});

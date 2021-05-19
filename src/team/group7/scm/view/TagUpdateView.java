@@ -12,11 +12,17 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import team.group7.scm.bean.Tag;
+import team.group7.scm.service.SetTagService;
+import team.group7.scm.service.Impl.SetTagServiceImpl;
+
 /**
  * @author UUZSAMA
  * */
 public class TagUpdateView extends JFrame {
 
+	private SetTagService setTagService = new SetTagServiceImpl();
+	
 	private static final long serialVersionUID = 4979217379740097607L;
 	private JPanel contentPane;
 	private JTextField textTag;
@@ -28,6 +34,9 @@ public class TagUpdateView extends JFrame {
 	 * Create the frame.
 	 */
 	public TagUpdateView() {
+		DefaultTableModel tableModel = (DefaultTableModel) TagManageView.table.getModel();
+		int row = TagManageView.selectedRow;
+		
 		setTitle("\u6570\u636E\u6807\u6CE8");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -45,6 +54,7 @@ public class TagUpdateView extends JFrame {
 		textTag.setBounds(136, 34, 158, 21);
 		contentPane.add(textTag);
 		textTag.setColumns(10);
+		textTag.setText(setTagService.getTags().get(row).getTagName());
 		
 		JLabel lblNewLabel1 = new JLabel("\u5C5E\u60271");
 		lblNewLabel1.setFont(new Font("ºÚÌå", Font.PLAIN, 16));
@@ -55,6 +65,7 @@ public class TagUpdateView extends JFrame {
 		textAtt1.setColumns(10);
 		textAtt1.setBounds(136, 83, 158, 21);
 		contentPane.add(textAtt1);
+		textAtt1.setText(setTagService.getTags().get(row).getAtt1());
 		
 		JLabel lblNewLabel11 = new JLabel("\u5C5E\u60272");
 		lblNewLabel11.setFont(new Font("ºÚÌå", Font.PLAIN, 16));
@@ -70,22 +81,24 @@ public class TagUpdateView extends JFrame {
 		textAtt2.setColumns(10);
 		textAtt2.setBounds(136, 111, 158, 21);
 		contentPane.add(textAtt2);
+		textAtt2.setText(setTagService.getTags().get(row).getAtt2());
 		
 		textAtt3 = new JTextField();
 		textAtt3.setColumns(10);
 		textAtt3.setBounds(136, 142, 158, 21);
 		contentPane.add(textAtt3);
+		textAtt3.setText(setTagService.getTags().get(row).getAtt3());
 		
 		JButton btnNewButton = new JButton("\u786E\u5B9A");
 		btnNewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				DefaultTableModel tableModel = (DefaultTableModel) TagManageView.table.getModel();
-				int row=TagManageView.selectedRow;
+				
 				tableModel.setValueAt(textTag.getText(), row, 0);
 				tableModel.setValueAt(textAtt1.getText(),row, 1);
 				tableModel.setValueAt(textAtt2.getText(),row, 2);
 				tableModel.setValueAt(textAtt3.getText(),row, 3);
+				setTagService.updateTag(new Tag(row,textTag.getText(),textAtt1.getText(),textAtt2.getText(),textAtt3.getText()),row);
 				dispose();
 			}
 		});

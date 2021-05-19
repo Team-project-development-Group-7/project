@@ -6,6 +6,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+
+import team.group7.scm.bean.Comment;
+import team.group7.scm.service.CommentService;
+import team.group7.scm.service.IOService;
+import team.group7.scm.service.Impl.CommentServiceImpl;
+import team.group7.scm.service.Impl.IOServiceImpl;
+
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JMenu;
@@ -23,7 +30,8 @@ import java.awt.event.ActionEvent;
  * 股评查看
  * */
 public class MaintainersView extends JFrame {
-
+	private CommentService commentService = new CommentServiceImpl();
+	private IOService ioService = new IOServiceImpl();
 	private static final long serialVersionUID = 58086414387199910L;
 	private JPanel contentPane;
 	private JTable table;
@@ -69,9 +77,27 @@ public class MaintainersView extends JFrame {
 		
 		JMenu mnNewMenuInput = new JMenu("\u5BFC\u5165");
 		mnNewMenuIo.add(mnNewMenuInput);
-		
 		JMenu mnNewMenuExport = new JMenu("\u5BFC\u51FA");
 		mnNewMenuIo.add(mnNewMenuExport);
+		mnNewMenuInput.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					ioService.input();
+					dispose();
+					new MaintainersView().setVisible(true);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		mnNewMenuExport.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				ioService.output();
+			}
+		});
 		
 		JMenu mnNewMenuTagManage = new JMenu("\u6807\u7B7E\u7BA1\u7406");
 		mnNewMenuTagManage.addMouseListener(new MouseAdapter() {
@@ -98,15 +124,7 @@ public class MaintainersView extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		table = createjTable();
-		/** 单选 */
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        table.addMouseListener(new MouseAdapter(){ 
-        	@Override
-            public void mouseClicked(MouseEvent e){
-                selectedRow = table.getSelectedRow();
-            }
-        });
+		initTable();
         
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(10, 10, 700, 500);
@@ -118,14 +136,31 @@ public class MaintainersView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				TableModel tableModel = table.getModel();
 				String comment = (String) tableModel.getValueAt(selectedRow, 1);
-				JOptionPane.showMessageDialog(MaintainersView.this,comment,"详细内容",JOptionPane.INFORMATION_MESSAGE);
+				String lines = "";
+				for(int i=0;i<comment.length();i+=80) {
+					int j = Math.min(i+80,comment.length());
+					lines += comment.substring(i,j)+"\n";
+				}
+				JOptionPane.showMessageDialog(MaintainersView.this,lines,"详细内容",JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		btnLookInto.setBounds(714, 39, 72, 23);
 		contentPane.add(btnLookInto);
 	}
+	private void initTable() {
+		table = createjTable();
+		/** 单选 */
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.addMouseListener(new MouseAdapter(){ 
+        	@Override
+            public void mouseClicked(MouseEvent e){
+                selectedRow = table.getSelectedRow();
+            }
+        });
+        table.getSelectionModel().setSelectionInterval(0,0);
+	}
 	/**
-	 * 股评数据-待修改
+	 * 股评数据
 	 * */
 	private JTable createjTable() {
 		JTable table = new JTable() {
@@ -133,60 +168,15 @@ public class MaintainersView extends JFrame {
 			@Override
 			public boolean isCellEditable(int row, int column) {return false;};
 		};
-		Object[] columnNames = {"编号","股票评论"};
-		Object[][] data = {
-				{1,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{2,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{3,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{4,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{5,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{6,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{7,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{8,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{9,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{10,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{11,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{12,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{13,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{14,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{15,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{16,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{17,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{18,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{19,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{20,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{21,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{22,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{23,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{24,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{25,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{26,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{27,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{28,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{29,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{30,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{31,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{32,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{33,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{34,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{35,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{36,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{37,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{38,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{39,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{40,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{41,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{42,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{43,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{44,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"}
-		};
+		Object[] columnNames = commentService.getTagJTableColNames();
+		Object[][] data = commentService.getTagJTableData();
 		
 		table.setModel(new DefaultTableModel(data,columnNames));
 		//修改列宽
 		TableColumn column = table.getColumnModel().getColumn(0);  
-		column.setPreferredWidth(50);
-		column.setMaxWidth(50);
-		column.setMinWidth(50);
+		column.setPreferredWidth(100);
+		column.setMaxWidth(100);
+		column.setMinWidth(100);
 		return table;
 	}
 }

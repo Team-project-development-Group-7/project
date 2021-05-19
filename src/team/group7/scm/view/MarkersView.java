@@ -17,6 +17,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import team.group7.scm.Cache.Cache;
+import team.group7.scm.service.CommentService;
+import team.group7.scm.service.IOService;
+import team.group7.scm.service.Impl.CommentServiceImpl;
+import team.group7.scm.service.Impl.IOServiceImpl;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -25,11 +31,12 @@ import java.awt.event.ActionEvent;
  * 股评查看&标注
  * */
 public class MarkersView extends JFrame {
-
+	private CommentService commentService = new CommentServiceImpl();
+	private IOService ioService = new IOServiceImpl();
 	private static final long serialVersionUID = -3930220319042994505L;
 	private JPanel contentPane;
-	private JTable table;
-	private int selectedRow = 0;
+	public static JTable table;
+	public static int selectedRow = 0;
 
 	/**
 	 * Create the frame.
@@ -69,7 +76,25 @@ public class MarkersView extends JFrame {
 		
 		JMenu mnNewMenuExport = new JMenu("\u5BFC\u51FA");
 		mnNewMenuIo.add(mnNewMenuExport);
-		
+		mnNewMenuInput.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					ioService.input();
+					dispose();
+					new MarkersView().setVisible(true);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		mnNewMenuExport.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				ioService.output();
+			}
+		});
 		JMenu mnNewMenuMark = new JMenu("\u80A1\u8BC4\u6807\u6CE8");
 		menuBar.add(mnNewMenuMark);
 		
@@ -96,7 +121,8 @@ public class MarkersView extends JFrame {
                 selectedRow = table.getSelectedRow();
             }
         });
-        
+        table.getSelectionModel().setSelectionInterval(selectedRow,selectedRow);
+       
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(10, 10, 700, 500);
 		contentPane.add(scrollPane);
@@ -107,7 +133,12 @@ public class MarkersView extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				TableModel tableModel = table.getModel();
 				String comment = (String) tableModel.getValueAt(selectedRow, 1);
-				JOptionPane.showMessageDialog(MarkersView.this,comment,"详细内容",JOptionPane.INFORMATION_MESSAGE);
+				String lines = "";
+				for(int i=0;i<comment.length();i+=80) {
+					int j = Math.min(i+80,comment.length());
+					lines += comment.substring(i,j)+"\n";
+				}
+				JOptionPane.showMessageDialog(MarkersView.this,lines,"详细内容",JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		btnLookInto.setBounds(714, 39, 72, 23);
@@ -132,60 +163,15 @@ public class MarkersView extends JFrame {
 			@Override
 			public boolean isCellEditable(int row, int column) {return false;};
 		};
-		Object[] columnNames = {"编号","股票评论"};
-		Object[][] data = {
-				{1,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{2,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{3,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{4,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{5,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{6,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{7,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{8,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{9,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{10,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{11,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{12,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{13,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{14,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{15,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{16,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{17,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{18,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{19,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{20,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{21,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{22,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{23,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{24,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{25,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{26,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{27,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{28,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{29,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{30,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{31,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{32,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{33,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{34,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{35,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{36,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{37,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{38,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{39,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{40,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{41,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"},
-				{42,"$哔哩哔哩(BILI)$ 年轻人的世界"},
-				{43,"$哔哩哔哩-SW(09626)$ 先打个卡，哔哩哔哩，是下一个港股万亿市值"},
-				{44,"$哔哩哔哩(BILI)$ 早就说了这个公司烂到根了。哪里来的哪里回去是大概率。"}
-		};
+		Object[] columnNames = commentService.getTagJTableColNames();
+		Object[][] data = commentService.getTagJTableData();
 		
 		table.setModel(new DefaultTableModel(data,columnNames));
 		//修改列宽
 		TableColumn column = table.getColumnModel().getColumn(0);  
-		column.setPreferredWidth(50);
-		column.setMaxWidth(50);
-		column.setMinWidth(50);
+		column.setPreferredWidth(100);
+		column.setMaxWidth(100);
+		column.setMinWidth(100);
 		return table;
 	}
 }

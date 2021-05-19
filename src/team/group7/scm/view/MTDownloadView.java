@@ -3,10 +3,19 @@ package team.group7.scm.view;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import team.group7.scm.service.DownloadService;
+import team.group7.scm.service.IOService;
+import team.group7.scm.service.Impl.DownloadServiceImpl;
+import team.group7.scm.service.Impl.IOServiceImpl;
+
 import javax.swing.JTextField;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -18,6 +27,8 @@ import javax.swing.JButton;
  * */
 public class MTDownloadView extends JFrame {
 
+	DownloadService downloadService = new DownloadServiceImpl();
+	private IOService ioService = new IOServiceImpl();
 	private static final long serialVersionUID = -4704855265036136063L;
 	private JPanel contentPane;
 	private JTextField textField;
@@ -63,7 +74,25 @@ public class MTDownloadView extends JFrame {
 		
 		JMenu mnNewMenuExport = new JMenu("\u5BFC\u51FA");
 		mnNewMenuIo.add(mnNewMenuExport);
-		
+		mnNewMenuInput.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					ioService.input();
+					dispose();
+					new MTDownloadView().setVisible(true);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		mnNewMenuExport.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				ioService.output();
+			}
+		});
 		JMenu mnNewMenuTagManage = new JMenu("\u6807\u7B7E\u7BA1\u7406");
 		menuBar.add(mnNewMenuTagManage);
 		mnNewMenuTagManage.addMouseListener(new MouseAdapter() {
@@ -102,6 +131,13 @@ public class MTDownloadView extends JFrame {
 		JButton btnCrawling = new JButton("\u722C\u53D6");
 		btnCrawling.setFont(new Font("黑体", Font.PLAIN, 20));
 		btnCrawling.setBounds(580, 29, 98, 33);
+		btnCrawling.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int state = downloadService.downLoad(textField.getText());
+				JOptionPane.showMessageDialog(MTDownloadView.this,state==200?"爬取成功!":"爬取失败!","提示",JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
 		contentPane.add(btnCrawling);
 	}
 }

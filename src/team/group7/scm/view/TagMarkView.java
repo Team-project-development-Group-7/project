@@ -1,18 +1,34 @@
 package team.group7.scm.view;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
+
+import team.group7.scm.Cache.Cache;
+import team.group7.scm.bean.Tag;
+import team.group7.scm.service.CommentService;
+import team.group7.scm.service.SetTagService;
+import team.group7.scm.service.TagMarkService;
+import team.group7.scm.service.Impl.CommentServiceImpl;
+import team.group7.scm.service.Impl.SetTagServiceImpl;
+import team.group7.scm.service.Impl.TagMarkServiceImpl;
 
 /**
  * @author UUZSAMA
  * */
 public class TagMarkView extends JFrame {
 
+	private TagMarkService tagMarkService = new TagMarkServiceImpl();
 	private static final long serialVersionUID = 6041152658573649457L;
 	private JPanel contentPane;
 	private JTable table;
@@ -33,24 +49,45 @@ public class TagMarkView extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(5, 5, 426, 253);
 		contentPane.add(scrollPane);
+		//关闭窗口事件
+		this.addWindowListener(new WindowAdapter() {  
+			@Override
+			public void windowClosing(WindowEvent e) {  
+				super.windowClosing(e);   
+				TableCellEditor ed = table.getCellEditor();
+				if(ed!=null)ed.stopCellEditing();  
+				List<Tag> src = tagMarkService.getTags();
+				List<Tag> tags = new ArrayList<Tag>();
+				for(int i=0;i<src.size();++i)tags.add(src.get(i).clone());
+				int flag = 0;
+				for(int i=0;i<Cache.TAG_LIST.size();++i) {
+					String tmp = (String)table.getValueAt(i, 4);
+					if(tmp!=null&&tmp!="") {flag = 1;}
+					tags.get(i).setAtt4(tmp);
+				}
+				if(flag>0) {
+					Cache.COMMENT_LIST.get(MarkersView.selectedRow).setTags(tags);
+					MarkersView.table.getSelectionModel().setSelectionInterval(MarkersView.selectedRow, MarkersView.selectedRow+1);
+					++MarkersView.selectedRow;
+					Cache.saveComment();
+				}
+			}  
+			  
+		});   
 	}
 	/**
-	 * 标注标签类-待修改-需数据库读写
+	 * 标注标签类
 	 * */
 	private JTable createjTable() {
-		JTable table = new JTable();
-		Object[] columnNames = {"标签类","属性1","属性2","属性3"};
-		Object[][] data = {
-				{"相关度"},
-				{"态度"},
-				{"推广"}
+		JTable table = new JTable(){
+			private static final long serialVersionUID = -7691281643413012186L;
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return column<4?false:true;
+			};
 		};
-		/*
-		String[] op = { "男", "女" };
-		JComboBox comboBox= new JComboBox(op);
-		for(int i=0;i<3;++i)
-			table.getColumnModel().getColumn(i).setCellEditor(new DefaultCellEditor(comboBox));
-		*/
+		Object[] columnNames = tagMarkService.getTagJTableColNames();
+		Object[][] data = tagMarkService.getTagJTableData();
 		
 		table.setModel(new DefaultTableModel(data,columnNames));
 		/** 修改列宽 */
