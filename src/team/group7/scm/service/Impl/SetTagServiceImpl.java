@@ -29,6 +29,7 @@ public class SetTagServiceImpl implements SetTagService {
 	public void delTag(int index) {
 		// TODO Auto-generated method stub
 		tagDao.delTag(index);
+		
 	}
 
 	@Override

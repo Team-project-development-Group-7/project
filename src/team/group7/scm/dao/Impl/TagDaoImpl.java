@@ -55,6 +55,4 @@ public class TagDaoImpl implements TagDao {
 		Cache.saveComment();
 		Cache.saveTag();
 	}
-
-
 }

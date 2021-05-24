@@ -24,6 +24,7 @@ import team.group7.scm.service.Impl.SetTagServiceImpl;
 import team.group7.scm.service.Impl.TagMarkServiceImpl;
 
 /**
+ * ±ê×¢Ò³Ãæ
  * @author UUZSAMA
  * */
 public class TagMarkView extends JFrame {

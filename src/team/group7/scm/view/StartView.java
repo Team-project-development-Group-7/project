@@ -8,6 +8,11 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+/**
+ * ¿ªÊ¼Ò³Ãæ
+ * @author UUZSAMA
+ *
+ */
 public class StartView extends JFrame {
 
 	private static final long serialVersionUID = -8530797118922967971L;

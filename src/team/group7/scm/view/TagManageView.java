@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
+ * ±Í«©π‹¿Ì
  * @author UUZSAMA
  * */
 public class TagManageView extends JFrame {

@@ -1,9 +1,13 @@
 package team.group7.scm.view;
 
 import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -30,6 +34,7 @@ import team.group7.scm.service.Impl.IOServiceImpl;
 import javax.swing.JTabbedPane;
 
 /**
+ * 统计图
  * @author UUZSAMA
  * */
 public class MTGraphView extends JFrame {
@@ -135,7 +140,7 @@ public class MTGraphView extends JFrame {
 		
 	}
 	/**
-	 * 统计图-功能待修改
+	 * 统计图
 	 * */
 	private JComponent makeTextPanel(String text){
 	    JPanel panel=new JPanel(false);
@@ -153,22 +158,49 @@ public class MTGraphView extends JFrame {
 	    ChartFactory.setChartTheme(standardChartTheme);
 	    switch(text) {
 	    case "饼图":
+	    	ArrayList<String> tagname = new ArrayList<String>();
 	    	DefaultPieDataset dfp=new DefaultPieDataset();
-	    	
-	    	int[][] nums = graphService.getTagResult();
 	    	for(int i=0;i<Cache.TAG_LIST.size();++i) {
 	    		Tag tag = Cache.TAG_LIST.get(i);
-	    		if(nums[i][0]>0)dfp.setValue(tag.getTagName()+":"+tag.getAtt1(), nums[i][0]);
-	    		if(nums[i][1]>0)dfp.setValue(tag.getTagName()+":"+tag.getAtt2(), nums[i][1]);
-	    		if(nums[i][2]>0)dfp.setValue(tag.getTagName()+":"+tag.getAtt3(), nums[i][2]);
+	    		
+	    		if(!tagname.contains(tag.getTagName())) {
+	    			tagname.add(tag.getTagName());
+	    		}
 	    	}
-		       
+	    	JComboBox jcombobox=new JComboBox(tagname.toArray());
+	    	panel.add(jcombobox);
+	    	int[][] nums = graphService.getTagResult();
+	    	Tag tag_init = Cache.TAG_LIST.get(0);
+	    	if(nums[0][0]>0)dfp.setValue(tag_init.getTagName()+":"+tag_init.getAtt1(), nums[0][0]);
+	    	if(nums[0][1]>0)dfp.setValue(tag_init.getTagName()+":"+tag_init.getAtt2(), nums[0][1]);
+	    	if(nums[0][2]>0)dfp.setValue(tag_init.getTagName()+":"+tag_init.getAtt3(), nums[0][2]);
+   
+	    	jcombobox.addItemListener((ItemListener) new ItemListener() {
+
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					// TODO Auto-generated method stub
+					String selected=(String)jcombobox.getSelectedItem();
+					dfp.clear();
+					
+			    	for(int i=0;i<Cache.TAG_LIST.size();++i) {
+			    		Tag tag = Cache.TAG_LIST.get(i);
+			    		if(tag.getTagName()==selected) {
+			    			if(nums[i][0]>0)dfp.setValue(tag.getTagName()+":"+tag.getAtt1(), nums[i][0]);
+			    			if(nums[i][1]>0)dfp.setValue(tag.getTagName()+":"+tag.getAtt2(), nums[i][1]);
+			    			if(nums[i][2]>0)dfp.setValue(tag.getTagName()+":"+tag.getAtt3(), nums[i][2]);
+			    		}
+			    	}
+				}
+	    		
+	    	});
 		        //Create JFreeChart object
 		    JFreeChart a=ChartFactory.createPieChart("股评分类结果",dfp, true, true, true);
 		    ChartPanel cp = new ChartPanel(a);
 		    panel.add(cp);
 		    break;
 	    case "柱状图":
+	    	
 	    	DefaultCategoryDataset dataset = new DefaultCategoryDataset();   
 	    	
 	    	int[][] nums2 = graphService.getTagResult();
@@ -178,6 +210,8 @@ public class MTGraphView extends JFrame {
 	    		if(nums2[i][1]>0)dataset.setValue(nums2[i][1],tag.getTagName(),tag.getAtt2());
 	    		if(nums2[i][2]>0)dataset.setValue(nums2[i][2],tag.getTagName(),tag.getAtt3());
 	    	}           
+	    	
+	    	
 	    	JFreeChart a1  = ChartFactory.createBarChart3D("具体标注数量统计图","","数量",dataset, PlotOrientation.VERTICAL,true,true,true);
 	    	ChartPanel cp1 = new ChartPanel(a1);
 		    panel.add(cp1);

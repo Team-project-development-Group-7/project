@@ -44,6 +44,7 @@ public class TagMarkServiceImpl implements TagMarkService {
 			Cache.saveComment();
 		}
 		for(int i=0;i<tags.size();++i) {
+			/**判断标签类是否被修改过*/
 			if(tags.get(i).getTagName()!=tmp.get(i).getTagName()||
 					tags.get(i).getAtt1()!=tmp.get(i).getAtt1()||
 					tags.get(i).getAtt2()!=tmp.get(i).getAtt2()||

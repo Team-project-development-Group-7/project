@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
+ * ±Í«©¿‡ÃÌº”
  * @author UUZSAMA
  * */
 public class TagAddView extends JFrame {

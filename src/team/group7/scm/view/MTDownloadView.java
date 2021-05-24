@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 
 /**
+ * œ¬‘ÿ“≥√Ê
  * @author UUZSAMA
  * */
 public class MTDownloadView extends JFrame {

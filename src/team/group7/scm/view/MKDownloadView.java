@@ -21,6 +21,11 @@ import team.group7.scm.service.IOService;
 import team.group7.scm.service.Impl.DownloadServiceImpl;
 import team.group7.scm.service.Impl.IOServiceImpl;
 
+/**
+ * œ¬‘ÿ“≥√Ê
+ * @author UUZSAMA
+ *
+ */
 public class MKDownloadView extends JFrame {
 
 	DownloadService downloadService = new DownloadServiceImpl();
