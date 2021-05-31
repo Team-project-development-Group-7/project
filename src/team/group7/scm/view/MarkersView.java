@@ -156,7 +156,7 @@ public class MarkersView extends JFrame {
 				new TagMarkView().setVisible(true);
 			}
 		});
-		btnMark.setBounds(714, 84, 72, 23);
+		btnMark.setBounds(714, 130, 72, 23);
 		contentPane.add(btnMark);
 		
 		JButton btnConflict = new JButton("³åÍ»");
@@ -166,7 +166,7 @@ public class MarkersView extends JFrame {
 				new TagConflictView().setVisible(true);
 			}
 		});
-		btnConflict.setBounds(714, 130, 72, 23);
+		btnConflict.setBounds(714, 84, 72, 23);
 		contentPane.add(btnConflict);
 		setOneRowBackgroundColor(table);
 	}
