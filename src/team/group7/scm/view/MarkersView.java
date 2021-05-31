@@ -2,6 +2,7 @@ package team.group7.scm.view;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,17 +14,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 import team.group7.scm.Cache.Cache;
+import team.group7.scm.bean.Tag;
 import team.group7.scm.service.CommentService;
 import team.group7.scm.service.IOService;
 import team.group7.scm.service.Impl.CommentServiceImpl;
 import team.group7.scm.service.Impl.IOServiceImpl;
 
 import java.awt.event.ActionListener;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 /**
@@ -127,7 +132,7 @@ public class MarkersView extends JFrame {
 		scrollPane.setBounds(10, 10, 700, 500);
 		contentPane.add(scrollPane);
 		
-		JButton btnLookInto = new JButton("\u67E5\u770B");
+		JButton btnLookInto = new JButton("查看");
 		btnLookInto.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -153,6 +158,17 @@ public class MarkersView extends JFrame {
 		});
 		btnMark.setBounds(714, 84, 72, 23);
 		contentPane.add(btnMark);
+		
+		JButton btnConflict = new JButton("冲突");
+		btnConflict.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new TagConflictView().setVisible(true);
+			}
+		});
+		btnConflict.setBounds(714, 130, 72, 23);
+		contentPane.add(btnConflict);
+		setOneRowBackgroundColor(table);
 	}
 	/**
 	 * 股评数据
@@ -173,5 +189,50 @@ public class MarkersView extends JFrame {
 		column.setMaxWidth(100);
 		column.setMinWidth(100);
 		return table;
+	}
+	/**
+	 * 设置表格的某一行的背景色
+	 * 白色:没有完全标注好
+	 * 绿色:标注好且没有冲突
+	 * 红色:有冲突
+	 * @param table
+	 */
+	public void setOneRowBackgroundColor(JTable table) {
+		try {
+			DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
+				public Component getTableCellRendererComponent(JTable table,
+						Object value, boolean isSelected, boolean hasFocus,
+						int row, int column) {
+					List<Tag> tags = commentService.getComments().get(row).getTags();
+					if(tags==null) tags = Cache.TAG_LIST;
+					boolean unTaged = false;
+					boolean muti = false;
+					for(Tag tag:tags) {
+						int cnt = 0;
+						if(tag.att1Cnt>0)++cnt;
+						if(tag.att2Cnt>0)++cnt;
+						if(tag.att3Cnt>0)++cnt;
+						if(cnt==0)unTaged = true;
+						else if(cnt>1)muti = true;
+					}
+					if (unTaged) {
+						setBackground(Color.WHITE);
+						setForeground(Color.BLACK);
+					}else if(muti){
+						setBackground(Color.RED);
+						setForeground(Color.BLACK);
+					}else{
+						setBackground(Color.GREEN);
+						setForeground(Color.BLACK);
+					}
+					return super.getTableCellRendererComponent(table, value,
+							isSelected, hasFocus, row, column);
+				}
+			};
+			int columnCount = table.getColumnCount();
+			for (int i = 0; i < columnCount; i++) {
+				table.getColumn(table.getColumnName(i)).setCellRenderer(tcr);
+			}
+		} catch (Exception ex) { ex.printStackTrace(); }
 	}
 }

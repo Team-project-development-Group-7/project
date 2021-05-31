@@ -65,6 +65,10 @@ public class TagMarkView extends JFrame {
 					String tmp = (String)table.getValueAt(i, 4);
 					if(tmp!=null&&tmp!="") {flag = 1;}
 					tags.get(i).setAtt4(tmp);
+					if(tmp==null)continue;
+					if(tmp.equals(tags.get(i).getAtt1()))++tags.get(i).att1Cnt;
+					if(tmp.equals(tags.get(i).getAtt2()))++tags.get(i).att2Cnt;
+					if(tmp.equals(tags.get(i).getAtt3()))++tags.get(i).att3Cnt;
 				}
 				if(flag>0) {
 					Cache.COMMENT_LIST.get(MarkersView.selectedRow).setTags(tags);

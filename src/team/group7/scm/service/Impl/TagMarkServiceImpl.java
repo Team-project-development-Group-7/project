@@ -39,16 +39,18 @@ public class TagMarkServiceImpl implements TagMarkService {
 		Comment cm = Cache.COMMENT_LIST.get(MarkersView.selectedRow);
 		List<Tag> tmp = cm.getTags();
 		if(tmp==null||tmp.size()!=tags.size()) {
-			cm.setTags(tags);
+			List<Tag> src = new ArrayList<Tag>();
+			for(int i=0;i<tags.size();++i)src.add(tags.get(i).clone());
+			cm.setTags(src);
 			tmp = cm.getTags();
 			Cache.saveComment();
 		}
 		for(int i=0;i<tags.size();++i) {
 			/**判断标签类是否被修改过*/
-			if(tags.get(i).getTagName()!=tmp.get(i).getTagName()||
-					tags.get(i).getAtt1()!=tmp.get(i).getAtt1()||
-					tags.get(i).getAtt2()!=tmp.get(i).getAtt2()||
-					tags.get(i).getAtt3()!=tmp.get(i).getAtt3()) {
+			if(!tags.get(i).getTagName().equals(tmp.get(i).getTagName())||
+				tags.get(i).getAtt1()!=null&&!tags.get(i).getAtt1().equals(tmp.get(i).getAtt1())||
+				tags.get(i).getAtt2()!=null&&!tags.get(i).getAtt2().equals(tmp.get(i).getAtt2())||
+				tags.get(i).getAtt3()!=null&&!tags.get(i).getAtt3().equals(tmp.get(i).getAtt3())) {
 				cm.setTags(tags);
 				tmp = cm.getTags();
 				Cache.saveComment();

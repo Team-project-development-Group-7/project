@@ -12,6 +12,9 @@ public class Tag {
 	private String att2;		//属性2
 	private String att3;		//属性3
 	private String att4 = null; //标注属性
+	public int att1Cnt = 0;
+	public int att2Cnt = 0;
+	public int att3Cnt = 0;
 	public Tag() {
 		super();
 	}
@@ -85,6 +88,9 @@ public class Tag {
 	@Override
     public Tag clone(){
         Tag node = new Tag(this.id,this.tagName,this.att1,this.att2,this.att3,this.att4);
+        node.att1Cnt = this.att1Cnt;
+        node.att2Cnt = this.att2Cnt;
+        node.att3Cnt = this.att3Cnt;
         return node;
     }
 }
